@@ -13,6 +13,7 @@
 ###
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -181,6 +182,45 @@ if args.debug:
 # if args.map:
 #     config.ldflags.append("-mapunused")
 # config.ldflags.append("-listclosure") # For Wii linkers
+
+# Auto-generate the original DOL from the original ELF if it doesn't exist yet.
+elf_path = Path("orig") / config.version / "files" / "Megaman.elf"
+dol_path = Path("orig") / config.version / "files" / "Megaman.dol"
+
+if not dol_path.exists() and elf_path.exists():
+    import shutil
+
+    dtk_binary = None
+    if config.dtk_path is not None and config.dtk_path.is_file():
+        dtk_binary = config.dtk_path
+    elif shutil.which("dtk") is not None:
+        dtk_binary = "dtk"
+    else:
+        # dtk not found, download
+        downloaded_dtk = (
+            args.build_dir / "tools" / ("dtk.exe" if is_windows() else "dtk")
+        )
+        if not downloaded_dtk.is_file():
+            print(f"dtk not found; downloading (tag {config.dtk_tag})...")
+            downloaded_dtk.parent.mkdir(parents=True, exist_ok=True)
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(Path("tools") / "download_tool.py"),
+                    "dtk",
+                    str(downloaded_dtk),
+                    "--tag",
+                    config.dtk_tag,
+                ],
+                check=True,
+            )
+        dtk_binary = downloaded_dtk
+
+    print(f"Generating {dol_path} from {elf_path}...")
+    subprocess.run(
+        [str(dtk_binary), "elf2dol", str(elf_path), str(dol_path)],
+        check=True,
+    )
 
 # Use for any additional files that should cause a re-configure when modified
 config.reconfig_deps = []

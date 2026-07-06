@@ -1,6 +1,6 @@
 # See config.example.yml for documentation.
 object_base: orig/G6QE08
-object: sys/main.dol
+object: files/Megaman.dol
 hash: 286c894ea486a5c2d51e27deac3fd9cf58b8014c
 symbols: config/G6QE08/symbols.txt
 splits: config/G6QE08/splits.txt
