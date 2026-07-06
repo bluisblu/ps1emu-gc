@@ -1,0 +1,16 @@
+Sections:
+	.init       type:code align:4
+	.text       type:code align:16
+	.ctors      type:rodata align:1
+	.dtors      type:rodata align:1
+	.rodata     type:rodata align:64
+	.data       type:data align:32
+	.bss        type:bss align:32
+	.sdata      type:data align:8
+	.sbss       type:bss align:8
+	.sdata2     type:rodata align:8
+
+prodg_fix.cpp:
+	.ctors      start:0x800B4EC0 end:0x800B4EC4 skip
+	.dtors      start:0x800B4EE0 end:0x800B4EE4 skip
+	.sdata2     start:0x80189714 end:0x80189720 skip

@@ -29,7 +29,7 @@ from tools.project import (
 # Game versions
 DEFAULT_VERSION = 0
 VERSIONS = [
-    "GAMEID",  # 0
+    "G6QE08",  # 0
 ]
 
 parser = argparse.ArgumentParser()
@@ -173,15 +173,14 @@ config.asflags = [
     f"-I build/{config.version}/include",
     f"--defsym BUILD_VERSION={version_num}",
 ]
-config.ldflags = [
-    "-fp hardware",
-    "-nodefaults",
-]
+ldscript_path = Path("config") / config.version / "ldscript.ld"
+config.ldflags = ["-T", str(ldscript_path)]
+
 if args.debug:
-    config.ldflags.append("-g")  # Or -gdwarf-2 for Wii linkers
-if args.map:
-    config.ldflags.append("-mapunused")
-    # config.ldflags.append("-listclosure") # For Wii linkers
+    config.ldflags.append("-gdwarf+")
+# if args.map:
+#     config.ldflags.append("-mapunused")
+# config.ldflags.append("-listclosure") # For Wii linkers
 
 # Use for any additional files that should cause a re-configure when modified
 config.reconfig_deps = []
@@ -192,7 +191,7 @@ config.scratch_preset_id = None
 
 # Base flags, common to most GC/Wii games.
 # Generally leave untouched, with overrides added below.
-cflags_base = [
+cflags_base_mwcc = [
     "-nodefaults",
     "-proc gekko",
     "-align powerpc",
@@ -215,24 +214,31 @@ cflags_base = [
     f"-DVERSION_{config.version}",
 ]
 
+cflags_base_prodg = [
+    "-O2",
+    "-I include",
+    f"-I build/{config.version}/include",
+    f"-DBUILD_VERSION={version_num}",
+    f"-DVERSION_{config.version}",
+]
+
 # Debug flags
 if args.debug:
-    # Or -sym dwarf-2 for Wii compilers
-    cflags_base.extend(["-sym on", "-DDEBUG=1"])
+    cflags_base_mwcc.append("-DDEBUG=1")
 else:
-    cflags_base.append("-DNDEBUG=1")
+    cflags_base_mwcc.append("-DNDEBUG=1")
 
-# Warning flags
-if args.warn == "all":
-    cflags_base.append("-W all")
-elif args.warn == "off":
-    cflags_base.append("-W off")
-elif args.warn == "error":
-    cflags_base.append("-W error")
+# # Warning flags
+# if args.warn == "all":
+#     cflags_base.append("-W all")
+# elif args.warn == "off":
+#     cflags_base.append("-W off")
+# elif args.warn == "error":
+#     cflags_base.append("-W error")
 
 # Metrowerks library flags
 cflags_runtime = [
-    *cflags_base,
+    *cflags_base_mwcc,
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-gccinc",
@@ -240,14 +246,7 @@ cflags_runtime = [
     "-inline auto",
 ]
 
-# REL flags
-cflags_rel = [
-    *cflags_base,
-    "-sdata 0",
-    "-sdata2 0",
-]
-
-config.linker_version = "GC/1.3.2"
+config.linker_version = "ProDG/3.9.3"
 
 
 # Helper function for Dolphin libraries
@@ -255,26 +254,17 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
-        "cflags": cflags_base,
+        "cflags": cflags_base_mwcc,
         "progress_category": "sdk",
         "objects": objects,
     }
 
 
-# Helper function for REL script objects
-def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
-    return {
-        "lib": lib_name,
-        "mw_version": "GC/1.3.2",
-        "cflags": cflags_rel,
-        "progress_category": "game",
-        "objects": objects,
-    }
-
-
-Matching = True                   # Object matches and should be linked
-NonMatching = False               # Object does not match and should not be linked
-Equivalent = config.non_matching  # Object should be linked when configured with --non-matching
+Matching = True  # Object matches and should be linked
+NonMatching = False  # Object does not match and should not be linked
+Equivalent = (
+    config.non_matching
+)  # Object should be linked when configured with --non-matching
 
 
 # Object is only matching for specific versions
