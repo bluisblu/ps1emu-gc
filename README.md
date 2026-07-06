@@ -18,13 +18,6 @@ See https://decomp.dev/api for an API overview.
 [Data Progress]: https://decomp.dev/bluisblu/ps1emu-gc.svg?mode=shield&measure=data&label=Data
 [progress]: https://decomp.dev/bluisblu/ps1emu-gc
 
-<!--
-Replace with your Discord server's ID and invite URL.
--->
-
-[Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
-[discord]: https://discord.gg/hKx3FJJgrV
-
 A work-in-progress decompilation of Mega Man Anniversary Collection, primarily for its PlayStation 1 emulator for GameCube.
 
 This repository does **not** contain any game assets or assembly whatsoever. An existing copy of the game is required.
