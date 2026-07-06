@@ -18,7 +18,7 @@ See https://decomp.dev/api for an API overview.
 [Data Progress]: https://decomp.dev/bluisblu/ps1emu-gc.svg?mode=shield&measure=data&label=Data
 [progress]: https://decomp.dev/bluisblu/ps1emu-gc
 
-A work-in-progress decompilation of Mega Man Anniversary Collection, primarily for its PlayStation 1 emulator for GameCube.
+A decompilation of Mega Man Anniversary Collection, primarily for its PlayStation 1 emulator for GameCube.
 
 This repository does **not** contain any game assets or assembly whatsoever. An existing copy of the game is required.
 
